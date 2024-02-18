@@ -35,7 +35,6 @@ function Footer() {
 
         <div className="md:block md:w-auto flex items-center justify-between w-full">
           <Link
-            className=""
             href="https://github.com/floreaviorel23/trello-tutorial"
             target="_blank"
             rel="noopener noreferrer"

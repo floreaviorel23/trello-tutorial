@@ -1,5 +1,6 @@
 import Logo from "@/components/logo";
 import { Button } from "@/components/ui/button";
+import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 function Navbar() {
@@ -10,10 +11,10 @@ function Navbar() {
 
         <div className="space-x-4 md:block md:w-auto flex items-center justify-between w-full">
           <Button size="sm" variant="outline" asChild>
-            <Link href="/signin">Login</Link>
+            <Link href="/login">Login</Link>
           </Button>
           <Button size="sm" asChild>
-            <Link href="/signup">Get Taskmaster for free</Link>
+            <Link href="/register">Get Taskmaster for free</Link>
           </Button>
         </div>
       </div>

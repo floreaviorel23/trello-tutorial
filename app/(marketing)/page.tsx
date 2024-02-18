@@ -4,6 +4,7 @@ import Link from "next/link";
 import localFont from "next/font/local";
 import { cn } from "@/lib/utils";
 import { Poppins } from "next/font/google";
+import { UserButton } from "@clerk/nextjs";
 
 const headingFont = localFont({ src: "../../public/fonts/font.woff2" });
 const textFont = Poppins({
@@ -45,7 +46,7 @@ function MarketingPage() {
       </div>
 
       <Button className="mt-6" size="lg" asChild>
-        <Link href="/signup">Get Taskmaster for free</Link>
+        <Link href="/register">Get Taskmaster for free</Link>
       </Button>
     </div>
   );
