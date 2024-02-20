@@ -1,5 +1,5 @@
 function OrganizationIdPage() {
-  return <div>Organization</div>;
+  return <div>Organization Page</div>;
 }
 
 export default OrganizationIdPage;

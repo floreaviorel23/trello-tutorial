@@ -1,62 +1,37 @@
 "use client";
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOrganization, useOrganizationList } from "@clerk/nextjs";
-import { access } from "fs";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useLocalStorage } from "usehooks-ts";
 import dynamic from "next/dynamic";
+import NavItem, { Organization } from "./nav-item";
 
 interface SidebarProps {
   storageKey?: string;
 }
 
-function Sidebar({ storageKey = "t-sidebar-state" }: SidebarProps) {
-  const [accordion, setAccordion] = useLocalStorage(
-    "accordion-storage-key",
-    []
-  );
+function Sidebar({ storageKey = "accordion-storage-key" }: SidebarProps) {
+  const [accordion, setAccordion] = useLocalStorage(storageKey, []);
 
-  //   const [expanded, setExpanded] = useLocalStorage<Record<string, any>>(
-  //     storageKey,
-  //     {}
-  //   );
+  const { organization: activeOrganization, isLoaded: isLoadedOrg } =
+    useOrganization();
 
-  //   const { organization: activeOrganization, isLoaded: isLoadedOrg } =
-  //     useOrganization();
+  const { userMemberships, isLoaded: isLoadedOrgList } = useOrganizationList({
+    userMemberships: { infinite: true },
+  });
 
-  //   const { userMemberships, isLoaded: isLoadedOrgList } = useOrganizationList({
-  //     userMemberships: { infinite: true },
-  //   });
-
-  //   const defaultAccordionValue: string[] = Object.keys(expanded).reduce(
-  //     (acc: string[], key: string) => {
-  //       if (expanded[key]) acc.push(key);
-  //       return acc;
-  //     },
-  //     []
-  //   );
-
-  //   const onExpand = (id: string) => {
-  //     setExpanded((curr) => ({ ...curr, [id]: !expanded[id] }));
-  //   };
-
-  //   if (!isLoadedOrg || !isLoadedOrgList || userMemberships.isLoading) {
-  //     return (
-  //       <>
-  //         <Skeleton />
-  //       </>
-  //     );
-  //   }
+  if (!isLoadedOrg || !isLoadedOrgList || userMemberships.isLoading) {
+    return (
+      <>
+        <Skeleton />
+      </>
+    );
+  }
 
   return (
     <>
@@ -75,11 +50,6 @@ function Sidebar({ storageKey = "t-sidebar-state" }: SidebarProps) {
         </Button>
       </div>
 
-      {/* <Accordion
-        type="multiple"
-        defaultValue={defaultAccordionValue}
-      ></Accordion> */}
-
       <Accordion
         onValueChange={(values) => {
           setAccordion([]);
@@ -91,33 +61,24 @@ function Sidebar({ storageKey = "t-sidebar-state" }: SidebarProps) {
           });
         }}
         type="multiple"
-        className="w-full"
+        className="space-y-2"
         defaultValue={accordion}
       >
-        <AccordionItem value="item-1">
-          <AccordionTrigger>Is it accessible?</AccordionTrigger>
-          <AccordionContent>
-            Yes. It adheres to the WAI-ARIA design pattern.
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="item-2">
-          <AccordionTrigger>Is it styled?</AccordionTrigger>
-          <AccordionContent>
-            Yes. It comes with default styles that matches the other
-            components&apos; aesthetic.
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="item-3">
-          <AccordionTrigger>Is it animated?</AccordionTrigger>
-          <AccordionContent>
-            Yes. It's animated by default, but you can disable it if you prefer.
-          </AccordionContent>
-        </AccordionItem>
+        {userMemberships.data.map(({ organization }) => (
+          <NavItem
+            key={organization.id}
+            isActive={activeOrganization?.id === organization.id}
+            organization={organization as Organization}
+            accordion={accordion}
+          />
+        ))}
       </Accordion>
     </>
   );
 }
 
+//Set ssr to false to avoid conflicts between react client side rendering
+//and Next ssr (conflicts occur on local storage being different)
 export default dynamic(() => Promise.resolve(Sidebar), {
   ssr: false,
 });
