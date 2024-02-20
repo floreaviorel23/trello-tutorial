@@ -21,9 +21,10 @@ interface SidebarProps {
 }
 
 function Sidebar({ storageKey = "t-sidebar-state" }: SidebarProps) {
-  const [value, setValue] = useLocalStorage("test-key", 0);
-
-  const [accordeons, setAccordeons] = useLocalStorage("accordeons", []);
+  const [accordion, setAccordion] = useLocalStorage(
+    "accordion-storage-key",
+    []
+  );
 
   //   const [expanded, setExpanded] = useLocalStorage<Record<string, any>>(
   //     storageKey,
@@ -81,19 +82,17 @@ function Sidebar({ storageKey = "t-sidebar-state" }: SidebarProps) {
 
       <Accordion
         onValueChange={(values) => {
-          setAccordeons([]);
-          //console.log("accordeons ", accordeons);
-
+          setAccordion([]);
           values.forEach((element) => {
             //@ts-ignore
-            setAccordeons((curr) => {
+            setAccordion((curr) => {
               return [...curr, element];
             });
           });
         }}
         type="multiple"
         className="w-full"
-        defaultValue={accordeons}
+        defaultValue={accordion}
       >
         <AccordionItem value="item-1">
           <AccordionTrigger>Is it accessible?</AccordionTrigger>
@@ -115,24 +114,6 @@ function Sidebar({ storageKey = "t-sidebar-state" }: SidebarProps) {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-
-      <div>
-        <p>Count: {value}</p>
-        <button
-          onClick={() => {
-            setValue((x) => x + 1);
-          }}
-        >
-          Increment
-        </button>
-        <button
-          onClick={() => {
-            setValue((x) => x - 1);
-          }}
-        >
-          Decrement
-        </button>
-      </div>
     </>
   );
 }
