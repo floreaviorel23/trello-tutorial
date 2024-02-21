@@ -1,15 +1,16 @@
 "use client";
 
+import NavItem, { Organization } from "./nav-item";
+
 import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useOrganization, useOrganizationList } from "@clerk/nextjs";
 import { Plus } from "lucide-react";
-import Link from "next/link";
+
 import { useLocalStorage } from "usehooks-ts";
+import { useOrganization, useOrganizationList } from "@clerk/nextjs";
 import dynamic from "next/dynamic";
-import NavItem, { Organization } from "./nav-item";
+import Link from "next/link";
 
 interface SidebarProps {
   storageKey?: string;
