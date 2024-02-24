@@ -1,23 +1,31 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { CreateBoardSchema } from "@/schemas/board";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-const CreateBoardSchema = z.object({
-  title: z.string(),
-});
+export async function createBoard(values: z.infer<typeof CreateBoardSchema>) {
+  const validatedFields = CreateBoardSchema.safeParse(values);
 
-export async function createBoard(formData: FormData) {
-  const { title } = CreateBoardSchema.parse({
-    title: formData.get("title"),
-  });
+  if (!validatedFields.success) {
+    return { error: "Invalid fields :c" };
+  }
 
-  await db.board.create({
-    data: {
-      title,
-    },
-  });
+  const { title } = validatedFields.data;
 
-  revalidatePath("/organization/org_2caTs96RTO1NDsdt85HiERyicgL");
+  let board;
+  try {
+    board = await db.board.create({
+      data: {
+        title,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return { error: "Failed to create." };
+  }
+
+  revalidatePath(`/board/${board.id}`);
+  return { data: board, success: "Board created successfully!" };
 }
