@@ -2,11 +2,21 @@
 
 import { db } from "@/lib/db";
 import { CreateBoardSchema } from "@/schemas/board";
-import { error } from "console";
+import { auth } from "@clerk/nextjs";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export async function createBoard(values: z.infer<typeof CreateBoardSchema>) {
+  console.log({ values: values });
+
+  return { success: "success :D", error: "error D:" };
+
+  /*
+  const { userId, orgId } = auth();
+  if (!userId || !orgId) {
+    return { error: "Unauthorized!" };
+  }
+
   const validatedFields = CreateBoardSchema.safeParse(values);
 
   if (!validatedFields.success) {
@@ -14,6 +24,9 @@ export async function createBoard(values: z.infer<typeof CreateBoardSchema>) {
   }
 
   const { title } = validatedFields.data;
+
+  
+  const [] = image.split("|");
 
   let board;
   try {
@@ -27,6 +40,7 @@ export async function createBoard(values: z.infer<typeof CreateBoardSchema>) {
     return { error: "Failed to create." };
   }
 
-  revalidatePath(`/board/${board.id}`);
-  return { data: board, success: "Board created successfully!" };
+  */
+  //revalidatePath(`/board/${board.id}`);
+  //return { data: board, success: "Board created successfully!" };
 }
