@@ -72,6 +72,8 @@ function NavItem({ isActive, organization, accordion }: NavItemProps) {
         <div className="flex items-center gap-x-2">
           <div className="w-7 h-7 relative">
             <Image
+              sizes="100%"
+              priority
               fill
               src={organization.imageUrl}
               alt="Organization"

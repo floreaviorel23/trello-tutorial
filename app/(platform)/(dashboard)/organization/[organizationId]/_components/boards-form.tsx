@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { createBoard } from "@/actions/create-board";
 import { CreateBoardSchema } from "@/schemas/board";
 import { useTransition } from "react";
+import { toast } from "sonner";
 
 function BoardsForm() {
   const form = useForm<z.infer<typeof CreateBoardSchema>>({
@@ -30,16 +31,21 @@ function BoardsForm() {
 
   function onSubmit(values: z.infer<typeof CreateBoardSchema>) {
     startTransition(() => {
-      createBoard(values);
+      createBoard(values).then((data) => {
+        if (data.success) {
+          toast.success(data.success, { duration: 3000 });
+        }
+
+        if (data.error) {
+          toast.error(data.error, { duration: 3000 });
+        }
+      });
     });
   }
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8 flex h-24"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="title"
@@ -61,7 +67,7 @@ function BoardsForm() {
             </FormItem>
           )}
         />
-        <Button disabled={isPending} className="ml-2" type="submit">
+        <Button disabled={isPending} className="w-full" type="submit">
           Submit
         </Button>
       </form>

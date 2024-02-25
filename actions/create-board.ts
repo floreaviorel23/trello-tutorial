@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db";
 import { CreateBoardSchema } from "@/schemas/board";
+import { error } from "console";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
