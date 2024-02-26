@@ -7,11 +7,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export async function createBoard(values: z.infer<typeof CreateBoardSchema>) {
-  console.log({ values: values });
-
-  return { success: "success :D", error: "error D:" };
-
-  /*
+  //console.log({ values: values });
   const { userId, orgId } = auth();
   if (!userId || !orgId) {
     return { error: "Unauthorized!" };
@@ -23,16 +19,31 @@ export async function createBoard(values: z.infer<typeof CreateBoardSchema>) {
     return { error: "Invalid fields :c" };
   }
 
-  const { title } = validatedFields.data;
+  const { title, image } = validatedFields.data;
 
-  
-  const [] = image.split("|");
+  const [imageId, imageThumbUrl, imageFullUrl, imageLinkHTML, imageUserName] =
+    image.split("|");
+
+  if (
+    !imageId ||
+    !imageThumbUrl ||
+    !imageFullUrl ||
+    !imageLinkHTML ||
+    !imageUserName
+  )
+    return { error: "Missing image fields. Failed to create board!" };
 
   let board;
   try {
     board = await db.board.create({
       data: {
         title,
+        orgId,
+        imageId,
+        imageThumbUrl,
+        imageFullUrl,
+        imageUserName,
+        imageLinkHTML,
       },
     });
   } catch (error) {
@@ -40,7 +51,6 @@ export async function createBoard(values: z.infer<typeof CreateBoardSchema>) {
     return { error: "Failed to create." };
   }
 
-  */
-  //revalidatePath(`/board/${board.id}`);
-  //return { data: board, success: "Board created successfully!" };
+  revalidatePath(`/board/${board.id}`);
+  return { data: board, success: "Board created successfully!" };
 }

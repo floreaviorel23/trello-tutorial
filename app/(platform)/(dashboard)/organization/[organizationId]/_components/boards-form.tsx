@@ -18,9 +18,13 @@ import { toast } from "sonner";
 import FormPicker from "@/components/form/form-picker";
 
 import { useForm } from "react-hook-form";
-import { useTransition } from "react";
+import { RefObject, useTransition } from "react";
 
-function BoardsForm() {
+interface BoardFormProps {
+  closeRef: RefObject<HTMLButtonElement>;
+}
+
+function BoardsForm({ closeRef }: BoardFormProps) {
   // Disable all form fields and submit button after submitting
   const [isPending, startTransition] = useTransition();
 
@@ -42,6 +46,7 @@ function BoardsForm() {
       createBoard(values).then((data) => {
         if (data.success) {
           toast.success(data.success, { duration: 3000 });
+          closeRef.current?.click();
         }
         if (data.error) {
           toast.error(data.error, { duration: 3000 });
@@ -100,7 +105,12 @@ function BoardsForm() {
         />
 
         {/* Submit Button */}
-        <Button disabled={isPending} className="w-full" type="submit">
+        <Button
+          disabled={isPending}
+          className="w-full"
+          type="submit"
+          variant="blueish"
+        >
           Submit
         </Button>
       </form>

@@ -19,25 +19,32 @@ interface FormPickerProps {
 
 function FormPicker({ setValue }: FormPickerProps) {
   const [isPending, startTransition] = useTransition();
-
-  const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [images, setImages] = useState<any>([]);
   const [selectedImageId, setSelectedImageId] = useState("");
+  const [selectedImage, setSelectedImage] = useState<any>(null);
 
   // Whenever the user selects an image, we set the field value of the form (which is hidden) to what he selected.
   // By using the useEffect() we wait for the value to change, and only
   // after that we set the field to the new state.
   useEffect(() => {
-    setValue("image", selectedImageId, {
-      shouldDirty: true,
-      shouldTouch: true,
-      shouldValidate: true,
-    });
-  }, [selectedImageId]);
+    if (selectedImage && selectedImage != null) {
+      let imageString = `${selectedImage.id}|${selectedImage.urls.thumb}|${selectedImage.urls.full}|
+      ${selectedImage.links.html}|${selectedImage.user.name}`;
+
+      setValue("image", imageString, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
+    }
+  }, [selectedImage]);
 
   function onImageClicked(image: any) {
     startTransition(() => {
       setSelectedImageId(image.id);
+      setSelectedImage(image);
     });
   }
 
@@ -47,7 +54,7 @@ function FormPicker({ setValue }: FormPickerProps) {
     const fetchImages = async () => {
       try {
         // Use this line to use the default images, instead of requesting more from the unsplash API
-        // throw new Error("Default images.");
+        throw new Error("Default images.");
 
         const result = await unsplash.photos.getRandom({
           collectionIds: ["317099"],
@@ -82,9 +89,8 @@ function FormPicker({ setValue }: FormPickerProps) {
     <div className="relative">
       <div className="grid grid-cols-3 gap-2 mb-2">
         {/* Iterate over the images */}
-        {images.map((image) => (
+        {images.map((image: any) => (
           <div
-            // @ts-ignore
             key={image.id}
             onClick={() => {
               onImageClicked(image);
@@ -104,7 +110,6 @@ function FormPicker({ setValue }: FormPickerProps) {
             />
 
             {/* Put a check mark over the selected image */}
-            {/* @ts-ignore */}
             {selectedImageId === image.id && (
               <div className="absolute inset-y-0 h-full w-full bg-black/40 flex items-center justify-center">
                 <Check className="h-4 w-4 text-white" />
@@ -114,13 +119,11 @@ function FormPicker({ setValue }: FormPickerProps) {
             {/* Uncomment below if you want to use unsplash in production */}
             {/*
              <Link
-              //@ts-ignore
               href={image.links.html}
               target="_blank"
               className="opacity-0 group-hover:opacity-100 absolute bottom-0 w-full text-[10px] truncate text-white hover:underline p-1 bg-black/50"
             >
               {
-                //@ts-ignore
                 image.user.name
               }
             </Link> */}
