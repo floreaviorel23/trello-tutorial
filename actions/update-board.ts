@@ -1,38 +1,42 @@
 "use server";
 
-import { DeleteBoardSchema } from "@/schemas/board";
+import { UpdateBoardSchema } from "@/schemas/board";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
-export async function deleteBoard(values: z.infer<typeof DeleteBoardSchema>) {
+export async function updateBoard(values: z.infer<typeof UpdateBoardSchema>) {
   const { userId, orgId } = auth();
   if (!userId || !orgId) {
     return { error: "Unauthorized!" };
   }
 
-  const validatedFields = DeleteBoardSchema.safeParse(values);
+  const validatedFields = UpdateBoardSchema.safeParse(values);
 
   if (!validatedFields.success) {
     return { error: "Invalid fields :c" };
   }
 
-  const { boardId } = validatedFields.data;
+  const { title, boardId } = validatedFields.data;
+
+  let board;
 
   try {
-    await db.board.delete({
+    board = await db.board.update({
       where: {
         id: boardId,
         orgId,
       },
+      data: {
+        title,
+      },
     });
   } catch (error) {
     console.error(error);
-    return { error: "Failed to delete." };
+    return { error: "Failed to update." };
   }
 
-  revalidatePath(`/organization/${orgId}`);
-  redirect(`/organization/${orgId}`);
+  revalidatePath(`/board/${boardId}`);
+  return { board, success: "Board updated successfully!" };
 }

@@ -52,5 +52,5 @@ export async function createBoard(values: z.infer<typeof CreateBoardSchema>) {
   }
 
   revalidatePath(`/board/${board.id}`);
-  return { data: board, success: "Board created successfully!" };
+  return { board, success: "Board created successfully!" };
 }

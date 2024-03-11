@@ -3,6 +3,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateBoardSchema } from "@/schemas/board";
 import { createBoard } from "@/actions/create-board";
+import { useRouter } from "next/navigation";
 
 import {
   Form,
@@ -27,6 +28,7 @@ interface BoardFormProps {
 function BoardsForm({ closeRef }: BoardFormProps) {
   // Disable all form fields and submit button after submitting
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof CreateBoardSchema>>({
     resolver: zodResolver(CreateBoardSchema),
@@ -47,6 +49,7 @@ function BoardsForm({ closeRef }: BoardFormProps) {
         if (data.success) {
           toast.success(data.success, { duration: 3000 });
           closeRef.current?.click();
+          router.push(`/board/${data.board.id}`);
         }
         if (data.error) {
           toast.error(data.error, { duration: 3000 });
